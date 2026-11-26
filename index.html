@@ -295,7 +295,7 @@ const fix=ts=>{const o=[...GG].sort((a,b)=>grt(b,ts)-grt(a,ts));return o.map(g=>
 const fin=(ts,lbl)=>{const o=gord(ts),f=[...GG].sort((a,b)=>grt(b,ts)-grt(a,ts)),w=f[0],b=f[3],ws=stt(grt(w,ts))[1];
  const ch=ts.length>1?shTxt(0,3,2):null;
  return `<div class="card fin"><h2>✨ Informasi akhir${lbl}</h2><ul class="lg">${(()=>{const c=cty(ts,3);return c.length?`<li><b>Wisatawan terbanyak dari:</b> ${c.map(x=>cap(x.c)).join(", ")}.</li>`:""})()}<li><b>Alasan utama datang:</b> ${IG[o[0]].d}, serta ${IG[o[1]].d}.</li>${ch?`<li><b>Perubahan dari waktu ke waktu:</b> ${ch.join("; ")}.</li>`:""}<li><b>Yang perlu diperbaiki:</b> ${ws=="G"?"semua kelompok wisata sudah memuaskan.":`${IG[w].n.toLowerCase()} — ${ACT[w][0].toLowerCase()}.`}</li><li><b>Yang sudah memuaskan:</b> ${IG[b].n.toLowerCase()}.</li></ul></div>`};
-const INFO=()=>{const w=sc(),sel=(window.iy===undefined||window.iy==="all")?"all":+window.iy,hero=`<section class="hero">${HERO_SVG}<div><h2>Mengapa wisatawan datang ke Indonesia?</h2><p>Ringkasan sederhana dari ulasan wisatawan mancanegara 2022–2025: apa yang mereka cari, apa yang berubah tiap tahun, dan apa yang perlu dibenahi.</p><span class="chip">Mudah dipahami</span><span class="chip">Tanpa angka rumit</span></div></section>`;
+const INFO=()=>{const w=sc(),sel=(window.iy===undefined||window.iy==="all")?"all":+window.iy,hero=`<section class="hero">${HERO_SVG}<div><h2>Mengapa wisatawan datang ke Indonesia?</h2><p>Ringkasan sederhana dari ulasan wisatawan mancanegara 2022–2025: apa yang mereka cari, apa yang berubah tiap tahun, dan apa yang perlu dibenahi.</p></div></section>`;
  const tabs=`<div class="yt noprint"><button class="${sel=="all"?"on":""}" onclick="iy='all';go('beranda')">Versi lengkap</button>${YRS.map((y,k)=>`<button class="${sel===k?"on":""}" onclick="iy=${k};go('beranda')">Tahun ${y}</button>`).join("")}</div><p class="note">Cakupan: <b>${cap(w)}</b> (ubah di filter atas). Pilih <b>Versi lengkap</b> untuk gambaran seluruh tahun, atau pilih satu tahun untuk melihat tahun itu saja.</p>`;
  if(tvv(ALL)<300)return hero+tabs+`<div class="card alert">Data wilayah ini terlalu sedikit untuk dirangkum. Pilih wilayah lain di filter atas.</div>`;
  if(sel=="all"){
@@ -310,7 +310,7 @@ ${ctyL(ALL,8,"Dari negara mana wisatawan datang?")}${(()=>{const r=YRS.map((y,j)
 ${ctyL([t],5,"Dari negara mana wisatawan datang di tahun "+y+"?")}
 ${CP([t])}<div class="card"><h2>Yang perlu diperbaiki di tahun ${y}</h2>${fix([t])}</div>${fin([t]," tahun "+y)}`};
 // Bagian Informasi (awam) ditaruh di ATAS Beranda, lalu pembatas 'Bagian Data' sebelum Ringkasan Eksekutif (tingkat keluhan, dst). Tidak ada menu baru.
-P.beranda=()=>`<span class="crumb i">Bagian Informasi: penjelasan sederhana tanpa angka</span>`+INFO()+`<hr class="dv"><span class="crumb d">Bagian Data: angka dan analisis dari ulasan</span>`+_hb();
+P.beranda=()=>INFO()+`<hr class="dv"><span class="crumb d">Bagian Data: angka dan analisis dari ulasan</span>`+_hb();
 // Pemisahan Data / Hasil lewat label di atas judul tiap halaman (menu tetap seperti semula)
 const NG=[["d",["destinasi","segmen","asal","tren","loyalitas","metodologi"],"Bagian Data: angka dan analisis dari ulasan"],["h",["rekomendasi"],"Bagian Hasil: kesimpulan dan rekomendasi tindakan"]];
 Object.keys(P).forEach(k=>{const f=P[k],g=NG.find(x=>x[1].includes(k));if(g)P[k]=()=>`<span class="crumb ${g[0]}">${g[2]}</span>`+f()});
