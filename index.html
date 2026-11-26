@@ -79,6 +79,14 @@ a{color:var(--ac)}
 .chip{display:inline-block;margin:0 6px 6px 0;padding:3px 11px;border-radius:99px;font-size:12.5px;font-weight:700;background:var(--gold);color:var(--on-gold)}
 @media(max-width:640px){.hero{padding:22px 18px}.hero svg{opacity:.4}.hero h2{font-size:23px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.crumb{display:inline-block;font-size:12.5px;font-weight:700;padding:3px 12px;border-radius:99px;margin:0 0 6px}.crumb.i{background:var(--gs);color:var(--g)}.crumb.d{background:var(--bd);color:var(--ac)}.crumb.h{background:var(--ys);color:var(--y)}
+.dv{border:0;border-top:3px dashed var(--bd);margin:26px 0 14px}.ng{align-self:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);padding:0 6px 0 14px;white-space:nowrap}
+.yt{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}.yt button{padding:8px 18px;border-radius:99px;font-weight:700;border:2px solid var(--ac);background:var(--card);color:var(--ac)}.yt button.on{background:var(--ac);color:#fff}
+.yc{border-top:4px solid var(--gold);margin-bottom:0}.yc h3{margin:0 0 6px;font-size:22px;color:var(--deep)}.yc p{margin:4px 0;font-size:14.5px}
+.lg{padding-left:20px;margin:6px 0}.lg li{margin:7px 0}
+.gr{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--bd)}.gr:last-child{border:0}.gr .ic{font-size:26px}
+.fin{border:2px solid var(--gold);background:linear-gradient(180deg,var(--card),var(--ys))}
+:root[data-theme="dark"] .yc h3{color:var(--tx)}
 @media print{header,.noprint{display:none}}
 </style></head><body>
 <!-- [F] KERANGKA HALAMAN: header (logo + filter wilayah #fd + menu #nav) dan area isi #app -->
@@ -248,5 +256,63 @@ return _ly()+`<div class="card sw"><h2>Loyalitas per kelompok</h2><table>${head.
 // ===== [10] TAMBAHAN: HERO BERANDA (ilustrasi pantai, gunung, matahari terbit) =====
 const HERO_SVG='<svg viewBox="0 0 600 220" preserveAspectRatio="xMaxYMax meet" aria-hidden="true"><circle cx="470" cy="78" r="58" fill="#f0b441" opacity=".25"/><circle cx="470" cy="78" r="36" fill="#f0b441"/><path d="M230 220 L350 80 L385 104 L440 58 L600 220Z" fill="#0b5f55" opacity=".85"/><path d="M110 220 Q250 120 390 168 T620 150 V220Z" fill="#1b8f5c"/><path d="M0 188 Q37 172 75 188 T150 188 T225 188 T300 188 T375 188 T450 188 T525 188 T600 188 V220 H0Z" fill="#fff" opacity=".16"/><path d="M0 202 Q37 188 75 202 T150 202 T225 202 T300 202 T375 202 T450 202 T525 202 T600 202 V220 H0Z" fill="#fff" opacity=".12"/></svg>';
 const _hb=P.beranda;P.beranda=()=>`<section class="hero">${HERO_SVG}<div><h2>Dari Sabang sampai Merauke, apa kata wisatawan?</h2><p>Ulasan wisatawan mancanegara dirangkum menjadi prioritas tindakan untuk pengelola destinasi dan dinas pariwisata.</p><span class="chip">${fm(D.TOT.INDONESIA)} ulasan</span><span class="chip">38 provinsi</span><span class="chip">2022–2025</span></div></section>`+_hb();
+// ===== [11] TAMBAHAN: HALAMAN "INFORMASI WISATAWAN" (bahasa awam, TANPA ANGKA) + PEMISAHAN MENU DATA / HASIL =====
+// Semua kalimat dibuat otomatis dari data tren (S3) sehingga ikut berubah mengikuti filter wilayah.
+// IG = nama & penjelasan awam tiap kelompok; SD = penjelasan awam tiap segmen (urutan sama dengan S; edit bila perlu)
+const IG=[null,{n:"Bersantai & kesehatan",ic:"🏖️",d:"bersantai, menenangkan diri, dan merawat tubuh"},{n:"Petualangan & alam",ic:"🌋",d:"berpetualang di laut, gunung, dan alam terbuka"},{n:"Budaya & spiritual",ic:"🛕",d:"mengenal budaya, adat, dan tempat-tempat spiritual"},{n:"Kuliner & gaya hidup",ic:"🍜",d:"menikmati kuliner, berbelanja, dan gaya hidup"}];
+const SD=["","bersantai dan melepas penat di tempat yang tenang","merawat tubuh lewat spa, yoga, dan hidup sehat","berpetualang di laut: menyelam, snorkeling, dan wisata pulau","berpetualang di gunung dan alam terbuka","mengenal budaya dan kehidupan masyarakat lebih dalam","berburu makanan khas dan kuliner lokal","berbelanja dan menikmati gaya hidup kota","menikmati pemandangan alam dan udara segar","mencari pengalaman bersantap yang berkesan","melihat satwa liar dan upaya pelestariannya","mengunjungi desa dan budaya masyarakat adat","mengunjungi candi, pura, dan situs warisan spiritual","menonton pertunjukan seni dan tari","mencicipi hidangan daging khas daerah","menikmati seni, galeri, dan kerajinan","bersosialisasi sambil menikmati minuman"];
+const YRS=[2022,2023,2024,2025],IDS=[...Array(16)].map((_,k)=>k+1),ALL=[0,1,2,3];
+const IN=i=>S[i];                 // label topik: "English (Indonesia)", sama seperti di halaman lain
+const sv=(i,t)=>tt(D.S3[sc()][i][t]);                                    // ulasan segmen i pada tahun t
+const tvv=ts=>sum(IDS.map(i=>sum(ts.map(t=>sv(i,t)))));                  // total ulasan pada tahun-tahun ts
+const shr=(g,ts)=>{const n=tvv(ts);return n?sum(grpIds(g).map(i=>sum(ts.map(t=>sv(i,t)))))/n*100:0};   // porsi kelompok (internal, tidak ditampilkan)
+const grt=(g,ts)=>{let c=0,n=0;grpIds(g).forEach(i=>ts.forEach(t=>{const a=D.S3[sc()][i][t];c+=a[0];n+=tt(a)}));return n?c/n*100:0};
+const tops=(ts,k)=>[...IDS].sort((a,b)=>sum(ts.map(t=>sv(b,t)))-sum(ts.map(t=>sv(a,t)))).slice(0,k);
+const gord=ts=>[...GG].sort((a,b)=>shr(b,ts)-shr(a,ts));
+const stt=r=>r<2.5?["Sudah baik","G"]:r<4?["Perlu diperhatikan","Y"]:["Perlu perbaikan","R"];
+// shift(): kelompok yang porsinya naik/turun antara tahun a dan b; th = ambang perubahan (poin %) - ubah bila perlu
+const shift=(a,b,th)=>GG.map(g=>({g,d:shr(g,[b])-shr(g,[a])})).filter(x=>Math.abs(x.d)>=th).sort((x,y)=>Math.abs(y.d)-Math.abs(x.d)).slice(0,3);
+const shTxt=(a,b,th)=>{const o=shift(a,b,th);return o.length?o.map(x=>`${IG[x.g].ic} ${IG[x.g].n} ${x.d>0?"makin diminati":"mulai berkurang peminatnya"}`):[`Alasan utama berkunjung relatif sama dengan ${YRS[a]}`]};
+// cty(): negara asal terbanyak pada tahun-tahun ts + alasan utama datangnya (tanpa angka); kosong bila data negara wilayah ini tidak ada
+const cty=(ts,k)=>{const m=D.S4[sc()];if(!m)return[];return Object.entries(m).map(([c,t])=>({c,n:sum(IDS.map(i=>sum(ts.map(y=>tt(t[i][y])))))})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,k).map(x=>{const t=m[x.c],g=[...GG].sort((a,b)=>sum(grpIds(b).map(i=>sum(ts.map(y=>tt(t[i][y])))))-sum(grpIds(a).map(i=>sum(ts.map(y=>tt(t[i][y]))))))[0];return{c:x.c,g}})};
+const ctyL=(ts,k,t)=>{const o=cty(ts,k);return o.length?`<div class="card"><h2>${t}</h2>${li(o.map(x=>`<b>${cap(x.c)}</b> — terutama untuk ${IG[x.g].d}.`))}</div>`:""};
+// CP(): kartu "Pilih negara asal" - wisatawan negara terpilih datang untuk topik/kelompok apa (tanpa angka). Negara dengan <50 ulasan tidak ditampilkan di pilihan
+const cvol=(t,ts,ids)=>sum(ids.map(i=>sum(ts.map(y=>tt(t[i][y])))));
+const ccom=(t,ts,ids)=>sum(ids.map(i=>sum(ts.map(y=>t[i][y][0]))));
+function pickC(v){window.ic=v;const y=scrollY;go('beranda');scrollTo(0,y)}
+const CP=ts=>{const m=D.S4[sc()];if(!m)return"";
+ const all=Object.entries(m).map(([c,t])=>({c,t,n:cvol(t,ALL,IDS)})).filter(x=>x.n>=50).sort((a,b)=>b.n-a.n).slice(0,80);if(!all.length)return"";
+ const cu=all.find(x=>x.c===window.ic)||all[0],t=cu.t,n=cvol(t,ts,IDS),nm=cap(cu.c);let b;
+ if(n<30)b=`<p class="note">Data wisatawan dari ${nm} pada periode ini terlalu sedikit untuk dirangkum. Coba pilih negara lain atau "Versi lengkap".</p>`;
+ else{const g=[...GG].sort((x,y)=>cvol(t,ts,grpIds(y))-cvol(t,ts,grpIds(x))),tp=[...IDS].sort((x,y)=>cvol(t,ts,[y])-cvol(t,ts,[x])).slice(0,3),
+  wg=GG.filter(k=>cvol(t,ts,grpIds(k))>=20).sort((x,y)=>ccom(t,ts,grpIds(y))/cvol(t,ts,grpIds(y))-ccom(t,ts,grpIds(x))/cvol(t,ts,grpIds(x)))[0],
+  wr=wg?ccom(t,ts,grpIds(wg))/cvol(t,ts,grpIds(wg))*100:0;
+  b=`<p>Wisatawan dari <b>${nm}</b> paling banyak datang untuk <b>${IG[g[0]].ic} ${IG[g[0]].n}</b> (${IG[g[0]].d}), lalu ${IG[g[1]].ic} ${IG[g[1]].n}.</p><p class="note">Urutan minat: ${g.map(k=>IG[k].ic+" "+IG[k].n).join(" › ")}</p><p style="margin-bottom:2px"><b>Topik yang paling dicari:</b></p>${li(tp.map(i=>`<b>${IN(i)}</b> — ${SD[i]}.`))}<p>${wg&&stt(wr)[1]!="G"?`Hal yang paling sering membuat mereka kurang puas: <b>${IG[wg].n}</b>.`:"Secara umum wisatawan dari negara ini cukup puas."}</p>`}
+ return `<div class="card"><h2>🔎 Pilih negara asal wisatawan</h2><select class="noprint" onchange="pickC(this.value)" aria-label="Pilih negara">${all.map(x=>`<option value="${x.c}" ${x.c===cu.c?"selected":""}>${cap(x.c)}</option>`).join("")}</select>${b}</div>`};
+const li=a=>`<ul class="lg">${a.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+const fix=ts=>{const o=[...GG].sort((a,b)=>grt(b,ts)-grt(a,ts));return o.map(g=>{const r=grt(g,ts),[l,c]=stt(r),d=grt(g,[3])-grt(g,[0]),tr=ts.length>1?(d<-.5?" · cenderung membaik":d>.5?" · cenderung memburuk":" · stabil"):"";
+ return `<div class="gr"><span class="ic">${IG[g].ic}</span><div><b>${IG[g].n}</b> <span class="tag ${c}">${l}</span><span class="note">${tr}</span><p style="margin:4px 0">${c=="G"?"Pertahankan mutu layanan yang sudah baik.":ACT[g][0]+"."}</p><span class="note">Pihak terkait: ${ACT[g][1]}</span></div></div>`}).join("")};
+const fin=(ts,lbl)=>{const o=gord(ts),f=[...GG].sort((a,b)=>grt(b,ts)-grt(a,ts)),w=f[0],b=f[3],ws=stt(grt(w,ts))[1];
+ const ch=ts.length>1?shTxt(0,3,2):null;
+ return `<div class="card fin"><h2>✨ Informasi akhir${lbl}</h2><ul class="lg">${(()=>{const c=cty(ts,3);return c.length?`<li><b>Wisatawan terbanyak dari:</b> ${c.map(x=>cap(x.c)).join(", ")}.</li>`:""})()}<li><b>Alasan utama datang:</b> ${IG[o[0]].d}, serta ${IG[o[1]].d}.</li>${ch?`<li><b>Perubahan dari waktu ke waktu:</b> ${ch.join("; ")}.</li>`:""}<li><b>Yang perlu diperbaiki:</b> ${ws=="G"?"semua kelompok wisata sudah memuaskan.":`${IG[w].n.toLowerCase()} — ${ACT[w][0].toLowerCase()}.`}</li><li><b>Yang sudah memuaskan:</b> ${IG[b].n.toLowerCase()}.</li></ul></div>`};
+const INFO=()=>{const w=sc(),sel=(window.iy===undefined||window.iy==="all")?"all":+window.iy,hero=`<section class="hero">${HERO_SVG}<div><h2>Mengapa wisatawan datang ke Indonesia?</h2><p>Ringkasan sederhana dari ulasan wisatawan mancanegara 2022–2025: apa yang mereka cari, apa yang berubah tiap tahun, dan apa yang perlu dibenahi.</p><span class="chip">Mudah dipahami</span><span class="chip">Tanpa angka rumit</span></div></section>`;
+ const tabs=`<div class="yt noprint"><button class="${sel=="all"?"on":""}" onclick="iy='all';go('beranda')">Versi lengkap</button>${YRS.map((y,k)=>`<button class="${sel===k?"on":""}" onclick="iy=${k};go('beranda')">Tahun ${y}</button>`).join("")}</div><p class="note">Cakupan: <b>${cap(w)}</b> (ubah di filter atas). Pilih <b>Versi lengkap</b> untuk gambaran seluruh tahun, atau pilih satu tahun untuk melihat tahun itu saja.</p>`;
+ if(tvv(ALL)<300)return hero+tabs+`<div class="card alert">Data wilayah ini terlalu sedikit untuk dirangkum. Pilih wilayah lain di filter atas.</div>`;
+ if(sel=="all"){
+  return hero+tabs+`<div class="card"><h2>Alasan utama wisatawan datang, tahun ke tahun</h2><div class="grid">${YRS.map((y,k)=>{const o=gord([k]),s=tops([k],1)[0];return `<div class="card yc"><h3>${y}</h3>${tvv([k])<100?'<p class="note">Data terlalu sedikit.</p>':`<p>${IG[o[0]].ic} <b>${IG[o[0]].n}</b></p><p>${IG[o[1]].ic} ${IG[o[1]].n}</p><p class="note">Paling dicari: ${IN(s)}</p>`}</div>`}).join("")}</div></div>
+<div class="card"><h2>Apa yang berubah dari tahun ke tahun?</h2>${li([1,2,3].map(k=>`<b>${YRS[k-1]} → ${YRS[k]}:</b> ${shTxt(k-1,k,1).join("; ")}.`).concat([`<b>Secara keseluruhan (2022 → 2025):</b> ${shTxt(0,3,2).join("; ")}.`]))}</div>
+<div class="card"><h2>Alasan paling populer sepanjang 2022–2025</h2>${li(tops(ALL,5).map(i=>`<b>${IN(i)}</b> — wisatawan datang untuk ${SD[i]}.`))}</div>
+${ctyL(ALL,8,"Dari negara mana wisatawan datang?")}${(()=>{const r=YRS.map((y,j)=>cty([j],3).map(x=>cap(x.c)));return r[0].length?`<div class="card"><h2>Negara asal teratas tiap tahun</h2>${li(r.map((x,j)=>`<b>${YRS[j]}:</b> ${x.join(", ")}`))}</div>`:""})()}${CP(ALL)}<div class="card"><h2>Yang perlu diperbaiki dan yang sudah baik</h2>${fix(ALL)}</div>${fin(ALL,"")}`}
+ const t=sel,y=YRS[t];
+ if(tvv([t])<100)return hero+tabs+`<div class="card alert">Data tahun ${y} di wilayah ini terlalu sedikit untuk dirangkum.</div>`;
+ const o=gord([t]),tp=tops([t],3),pv=t?tops([t-1],3):[],nw=tp.filter(i=>!pv.includes(i));
+ return hero+tabs+`<div class="card"><h2>Mengapa wisatawan datang di tahun ${y}?</h2><p>Sebagian besar datang untuk ${IG[o[0]].d}, lalu ${IG[o[1]].d}.</p><div class="grid">${tp.map((i,k)=>`<div class="card yc"><span class="note">Alasan ke-${k+1}</span><h3 style="font-size:17px">${IN(i)}</h3><p>Wisatawan datang untuk ${SD[i]}.</p></div>`).join("")}</div></div>
+${ctyL([t],5,"Dari negara mana wisatawan datang di tahun "+y+"?")}
+${CP([t])}<div class="card"><h2>Yang perlu diperbaiki di tahun ${y}</h2>${fix([t])}</div>${fin([t]," tahun "+y)}`};
+// Bagian Informasi (awam) ditaruh di ATAS Beranda, lalu pembatas 'Bagian Data' sebelum Ringkasan Eksekutif (tingkat keluhan, dst). Tidak ada menu baru.
+P.beranda=()=>`<span class="crumb i">Bagian Informasi: penjelasan sederhana tanpa angka</span>`+INFO()+`<hr class="dv"><span class="crumb d">Bagian Data: angka dan analisis dari ulasan</span>`+_hb();
+// Pemisahan Data / Hasil lewat label di atas judul tiap halaman (menu tetap seperti semula)
+const NG=[["d",["destinasi","segmen","asal","tren","loyalitas","metodologi"],"Bagian Data: angka dan analisis dari ulasan"],["h",["rekomendasi"],"Bagian Hasil: kesimpulan dan rekomendasi tindakan"]];
+Object.keys(P).forEach(k=>{const f=P[k],g=NG.find(x=>x[1].includes(k));if(g)P[k]=()=>`<span class="crumb ${g[0]}">${g[2]}</span>`+f()});
 render();
 </script></body></html>
